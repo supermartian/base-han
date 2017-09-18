@@ -25,7 +25,9 @@ void test_000()
 	char out[1024];
 	ssize_t len_in = strlen(in);
 
-	printf("%s %d\n", in, len_in);
+	printf("\n==Testing UTF-8 encoding/decoding ===\n");
+
+	printf("%s\n", in);
 
 	memset(out, 0, 1024);
 	len_in = cjk_mapping_encode(in, len_in, out, get_encode_len(len_in));
@@ -42,7 +44,9 @@ void test_001()
 	char out[1024];
 	ssize_t len_in = strlen(in);
 
-	printf("%s %d\n", in, len_in);
+	printf("\n==Testing ASCII encoding/decoding ===\n");
+
+	printf("%s\n", in);
 
 	memset(out, 0, 1024);
 	len_in = cjk_mapping_encode(in, len_in, out, get_encode_len(len_in));
@@ -59,7 +63,9 @@ void test_002()
 	char out[1024];
 	ssize_t len_in = strlen(in);
 
-	printf("%s %d\n", in, len_in);
+	printf("\n==Testing Long ASCII encoding/decoding ===\n");
+
+	printf("%s\n", in);
 
 	memset(out, 0, 1024);
 	len_in = cjk_mapping_encode(in, len_in, out, get_encode_len(len_in));
@@ -77,6 +83,8 @@ void test_003()
 	int i;
 	ssize_t len_in = 6;
 
+	printf("\n==Testing binary encoding/decoding ===\n");
+
 	for (i = 0; i < 6; i++)
 		printf("%x ", in[i]);
 	printf("\n");
@@ -91,6 +99,8 @@ void test_003()
 		printf("%x ", in[i]);
 
 	printf("\n");
+
+	printf("=====\n");
 }
 
 void test_004()
@@ -103,6 +113,8 @@ void test_004()
 	int i;
 	ssize_t len_in = 16;
 
+	printf("\n==Testing long binary encoding/decoding ===\n");
+
 	for (i = 0; i < 16; i++)
 		printf("%x ", in[i]);
 	printf("\n");
@@ -117,6 +129,8 @@ void test_004()
 		printf("%x ", in[i]);
 
 	printf("\n");
+
+	printf("=====\n");
 }
 int main()
 {

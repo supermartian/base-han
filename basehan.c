@@ -91,7 +91,7 @@ int cjk_mapping_encode(const char *in, ssize_t in_len, char *out, ssize_t out_le
 	// Padding it to 8 bytes
 	not_aligned = in_len % 8;
 
-	if (out_len < 15 * (in_len / 8))
+	if (out_len < 15 * (in_len / 8) || in_len < 1)
 		// Not enough output buffer
 		return -1;
 
@@ -105,7 +105,7 @@ int cjk_mapping_encode(const char *in, ssize_t in_len, char *out, ssize_t out_le
 	// If input is not aligned to 8 bytes, deal with the unaligned
 	// bytes now
 	if (not_aligned || in_len < 8) {
-		memcpy(padding, in + i, not_aligned + 1);
+		memcpy(padding, in + i, not_aligned);
 		encode_process(padding, out + r_len);
 		r_len += 15;
 	}
@@ -123,7 +123,7 @@ int cjk_mapping_decode(const char *in, ssize_t in_len, char *out, ssize_t out_le
 	int not_aligned = 0;
 	int i;
 
-	if (out_len < (in_len / 15) * 8)
+	if (out_len < (in_len / 15) * 8 || in_len < 1)
 		// Not enough output buffer
 		return -1;
 
