@@ -1,20 +1,22 @@
 /**
- * basehan: An algorithm that maps bytes to Chinese characters.
- * What we use here is from U+4E00 ~ U+9FA5, which maps to CJK character space.
+ * Copyright (C) 2017 Yuzhong Wen <supermartian@gmail.com>
  *
+ * basehan: An algorithm that maps bytes to Chinese characters.
+ * What we use here is from U+4E00 ~ U+8E00, which maps to CJK character space.
+ *
+ * Distributed under terms of the MIT license.
+ */
+
+/*
  * Algorithm in detail:
  * 1. Take the input string by every two bytes
  * 2. Maps the bytes to 4E00-8E00 space, similar to what base64 does
  * 3. Maps the transfromed bytes to UTF-8 space.
- */
-
-/**
+ *
  * CJK Symbols and Punctuation: U+3000 ~ U+303F
  * Those characters will be chosen randomly as paddings
  */
 
-#include <string.h>
-#include <stdio.h>
 #include <unistd.h>
 
 static inline void to_utf8_3(unsigned short in, unsigned char *out)
@@ -95,19 +97,16 @@ int cjk_mapping_encode(const char *in, ssize_t in_len, char *out, ssize_t out_le
 
 	memset(out, 0, out_len);
 
-	for (i = 0; i < in_len; i += 8) {
-		encode_process(in + i, out);
-		out += 15;
+	for (i = 0; i < in_len - not_aligned; i += 8) {
+		encode_process(in + i, out + r_len);
 		r_len += 15;
 	}
 
 	// If input is not aligned to 8 bytes, deal with the unaligned
 	// bytes now
 	if (not_aligned || in_len < 8) {
-		memcpy(padding, in + 8 * in_len, not_aligned);
-		encode_process(padding, out);
-		in += not_aligned;
-		out += 15;
+		memcpy(padding, in + i, not_aligned + 1);
+		encode_process(padding, out + r_len);
 		r_len += 15;
 	}
 
@@ -131,28 +130,9 @@ int cjk_mapping_decode(const char *in, ssize_t in_len, char *out, ssize_t out_le
 	memset(out, 0, out_len);
 
 	for (i = 0; i < in_len; i += 15) {
-		decode_process(in + i, out);
-		out += 8;
+		decode_process(in + i, out + r_len);
 		r_len += 8;
 	}
 
 	return r_len;
-}
-
-int main()
-{
-	//testing cjk_mapping_encode
-	char in[1024]="狗大山偷鸡摸狗日麦子被炸鸡发现了";
-	char out[1024];
-	ssize_t len_in = strlen(in);
-	int i;
-
-	printf("%s %d\n", in, len_in);
-
-	cjk_mapping_encode(in, len_in, out, 1024);
-	printf("%s\n", out);
-
-	memset(in, 0, 1024);
-	cjk_mapping_decode(out, 128, in, 1024);
-	printf("%s\n", in);
 }
